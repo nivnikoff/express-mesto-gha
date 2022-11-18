@@ -6,22 +6,22 @@ const ServerError = require('../errors/ServerError');
 const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => next(new ServerError('Что-то пошло не так')));
+    .catch(() => next(new ServerError({ message: 'Что-то пошло не так' })));
 };
 
 const getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не найден');
+        throw new NotFoundError({ message: 'Пользователь не найден' });
       }
-      return res.status(200).send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequestError('Некорректный id'));
+        return next(new BadRequestError({ message: 'Некорректный id' }));
       }
-      return next(new ServerError('Что-то пошло не так'));
+      return next(new ServerError({ message: 'Что-то пошло не так' }));
     });
 };
 
@@ -31,9 +31,9 @@ const createUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Некорректные данные пользователя'));
+        return next(new BadRequestError({ message: 'Некорректные данные пользователя' }));
       }
-      return next(new ServerError('Что-то пошло не так'));
+      return next(new ServerError({ message: 'Что-то пошло не так' }));
     });
 };
 
@@ -46,15 +46,15 @@ const updateUserInfo = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не найден');
+        throw new NotFoundError({ message: 'Пользователь не найден' });
       }
-      return res.status(200).send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Некорректные данные пользователя'));
+        return next(new BadRequestError({ message: 'Некорректные данные пользователя' }));
       }
-      return next(new ServerError('Что-то пошло не так'));
+      return next(new ServerError({ message: 'Что-то пошло не так' }));
     });
 };
 
@@ -67,15 +67,15 @@ const updateUserAvatar = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не найден');
+        throw new NotFoundError({ message: 'Пользователь не найден' });
       }
-      return res.status(200).send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Некорректные данные пользователя'));
+        return next(new BadRequestError({ message: 'Некорректные данные пользователя' }));
       }
-      return next(new ServerError('Что-то пошло не так'));
+      return next(new ServerError({ message: 'Что-то пошло не так' }));
     });
 };
 

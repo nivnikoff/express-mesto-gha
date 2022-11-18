@@ -6,7 +6,7 @@ const ServerError = require('../errors/ServerError');
 const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.status(200).send({ data: cards }))
-    .catch(() => next(new ServerError('Что-то пошло не так')));
+    .catch(() => next(new ServerError({ message: { message: 'Что-то пошло не так' } })));
 };
 
 const createCard = (req, res, next) => {
@@ -17,9 +17,9 @@ const createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Некорректные данные карточки'));
+        return next(new BadRequestError({ message: 'Некорректные данные карточки' }));
       }
-      return next(new ServerError('Что-то пошло не так'));
+      return next(new ServerError({ message: 'Что-то пошло не так' }));
     });
 };
 
@@ -27,11 +27,11 @@ const deleteCard = (req, res, next) => {
   Card.findByIdandRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка не найдена');
+        throw new NotFoundError({ message: 'Карточка не найдена' });
       }
-      return res.status(200).send({ data: card });
+      res.status(200).send({ data: card });
     })
-    .catch(() => next(new ServerError('Что-то пошло не так')));
+    .catch(() => next(new ServerError({ message: 'Что-то пошло не так' })));
 };
 
 const likeCard = (req, res, next) => {
@@ -42,11 +42,11 @@ const likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка не найдена');
+        throw new NotFoundError({ message: 'Карточка не найдена' });
       }
-      return res.status(200).send({ data: card });
+      res.status(200).send({ data: card });
     })
-    .catch(() => next(new ServerError('Что-то пошло не так')));
+    .catch(() => next(new ServerError({ message: 'Что-то пошло не так' })));
 };
 
 const dislikeCard = (req, res, next) => {
@@ -57,11 +57,11 @@ const dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка не найдена');
+        throw new NotFoundError({ message: 'Карточка не найдена' });
       }
-      return res.status(200).send({ data: card });
+      res.status(200).send({ data: card });
     })
-    .catch(() => next(new ServerError('Что-то пошло не так')));
+    .catch(() => next(new ServerError({ message: 'Что-то пошло не так' })));
 };
 
 module.exports = {
