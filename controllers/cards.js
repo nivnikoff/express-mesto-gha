@@ -21,14 +21,19 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findByIdandRemove(req.params.cardId)
+  Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
         return res.status(404).send({ message: 'Карточка не найдена' });
       }
       return res.status(200).send({ data: card });
     })
-    .catch(() => res.status(500).send({ message: 'Что-то пошло не так' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Некорректные данные карточки' });
+      }
+      return res.status(500).send({ message: 'Что-то пошло не так' });
+    });
 };
 
 const likeCard = (req, res) => {
@@ -43,7 +48,12 @@ const likeCard = (req, res) => {
       }
       return res.status(200).send({ data: card });
     })
-    .catch(() => res.status(500).send({ message: 'Что-то пошло не так' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Некорректные данные карточки' });
+      }
+      return res.status(500).send({ message: 'Что-то пошло не так' });
+    });
 };
 
 const dislikeCard = (req, res) => {
@@ -58,7 +68,12 @@ const dislikeCard = (req, res) => {
       }
       return res.status(200).send({ data: card });
     })
-    .catch(() => res.status(500).send({ message: 'Что-то пошло не так' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Некорректные данные карточки' });
+      }
+      return res.status(500).send({ message: 'Что-то пошло не так' });
+    });
 };
 
 module.exports = {
