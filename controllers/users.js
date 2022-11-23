@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
   STATUS_CREATED,
@@ -5,7 +7,6 @@ const {
   ERROR_NOT_FOUND,
   ERROR_SERVER,
 } = require('../utils/const');
-const bcrypt = require('bcrypt');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -93,10 +94,33 @@ const updateUserAvatar = (req, res) => {
     });
 };
 
+const login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.send({ token });
+    })
+    .catch(() => res.status(401).send({ message: 'Неверные почта или пароль' }));
+};
+
+const getCurrentUser = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
+      }
+      return res.status(200).sent({ data: user });
+    })
+    .catch(() => res.status(ERROR_SERVER).send({ message: 'Что-то пошло не так' }));
+};
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
   updateUserInfo,
   updateUserAvatar,
+  login,
+  getCurrentUser,
 };
