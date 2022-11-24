@@ -1,11 +1,14 @@
 const STATUS_CREATED = 201;
-const ERROR_BAD_REQUEST = 400;
-const ERROR_NOT_FOUND = 404;
-const ERROR_SERVER = 500;
+
+const SALT_ROUND = 10;
+
+const JWT_SECRET_KEY = 'very-protected-secret-key';
+
+const regEx = /(https?:\/\/)(w{3}\.)?([a-zA-Z0-9-]{0,63}\.)([a-zA-Z]{2,4})(\/[\w\-._~:/?#[\]@!$&'()*+,;=]#?)?/;
 
 module.exports = {
   STATUS_CREATED,
-  ERROR_BAD_REQUEST,
-  ERROR_NOT_FOUND,
-  ERROR_SERVER,
+  SALT_ROUND,
+  JWT_SECRET_KEY,
+  regEx,
 };
