@@ -6,7 +6,6 @@ const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    console.log(req.headers);
     throw new UnauthorizedError('Ошибка авторизации');
   }
 

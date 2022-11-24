@@ -38,6 +38,7 @@ const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
+  if (!email || !password) throw new BadRequestError('Необходимо указать email и пароль');
   return bcrypt.hash(password, SALT_ROUND)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
@@ -53,7 +54,7 @@ const createUser = (req, res, next) => {
         return next(new ConflictError('Пользователь с таким email уже существует'));
       }
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Некорректные данные пользователя'));
+        return next(new BadRequestError('Некорректный id'));
       }
       return next(err);
     });
@@ -129,7 +130,13 @@ const getCurrentUser = (req, res, next) => {
       }
       return res.send({ data: user });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Некорректные данные пользователя'));
+        return;
+      }
+      next(err);
+    });
 };
 
 module.exports = {
