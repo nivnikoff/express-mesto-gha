@@ -104,17 +104,19 @@ const updateUserAvatar = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findOne({ email })
+    .select('+password')
     .then((user) => {
       if (!user) {
-        throw new UnauthorizedError('Неверные почта или пароль');
+        return Promise.reject(new UnauthorizedError('Неверные почта или пароль'));
       }
-      bcrypt.compare(password, user.password, (error, matched) => {
-        if (!matched) {
-          throw new ForbiddenError('Неверные почта или пароль');
-        }
-        const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY, { expiresIn: '7d' });
-        res.send({ token });
-      });
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return Promise.reject(new ForbiddenError('Неверные почта или пароль'));
+          }
+          const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY, { expiresIn: '7d' });
+          return res.send({ token });
+        });
     })
     .catch(next);
 };
