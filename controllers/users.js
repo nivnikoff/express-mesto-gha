@@ -103,7 +103,7 @@ const updateUserAvatar = (req, res, next) => {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findOne(email)
+  return User.findOne({ email })
     .then((user) => {
       if (!user) {
         throw new UnauthorizedError('Неверные почта или пароль');
