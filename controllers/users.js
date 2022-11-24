@@ -10,6 +10,7 @@ const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -102,12 +103,20 @@ const updateUserAvatar = (req, res, next) => {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
+  return User.findOne(email)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY, { expiresIn: '7d' });
-      res.send({ token });
+      if (!user) {
+        throw new UnauthorizedError('Неверные почта или пароль');
+      }
+      bcrypt.compare(password, user.password, (error, matched) => {
+        if (!matched) {
+          throw new ForbiddenError('Неверные почта или пароль');
+        }
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY, { expiresIn: '7d' });
+        res.send({ token });
+      });
     })
-    .catch(() => next(new UnauthorizedError('Неверные почта или пароль')));
+    .catch(next);
 };
 
 const getCurrentUser = (req, res, next) => {
