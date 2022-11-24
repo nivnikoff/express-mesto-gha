@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const { errors, celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
-const regEx = require('./utils/const');
+const { regEx } = require('./utils/const');
 const { login, createUser } = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
