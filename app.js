@@ -4,10 +4,12 @@ const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const { errors, celebrate, Joi } = require('celebrate');
+const cors = require('cors');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
 const { regEx } = require('./utils/const');
 const { login, createUser } = require('./controllers/users');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 
@@ -31,6 +33,29 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use(helmet());
+
+const options = {
+  origin: [
+    'http://localhost:порт',
+    'https://ВАШ ДОМЕЙН С ДОКУМЕНТА',
+    'https://YOUR.github.io',
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+  credentials: true,
+};
+
+app.use(requestLogger);
+
+app.use('*', cors(options));
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -56,6 +81,8 @@ app.use('/cards', require('./routes/cards'));
 app.use((req, res, next) => {
   next(new NotFoundError('Страница по указанному маршруту не найдена'));
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
