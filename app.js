@@ -20,6 +20,7 @@ const options = {
   origin: [
     'http://localhost:3001',
     'https://nivnikoff.nomoredomains.club',
+    'http://nivnikoff.nomoredomains.club',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
